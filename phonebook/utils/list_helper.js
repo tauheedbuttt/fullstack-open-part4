@@ -13,8 +13,28 @@ const favoriteBlog = (blogs) => {
   return blog;
 };
 
+const mostBlogs = (blogs) => {
+  const authors = {};
+  blogs.forEach((blog) => {
+    authors[blog.author] = (authors[blog.author] ?? 0) + 1;
+  });
+
+  const authorWithBlog = Object.keys(authors).map((key) => ({
+    author: key,
+    blogs: authors[key],
+  }));
+
+  const mostBlogs = Math.max(...authorWithBlog.map((item) => item.blogs));
+  const authorWithMostBlogs = authorWithBlog.find(
+    (item) => item.blogs === mostBlogs
+  );
+
+  return authorWithMostBlogs;
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 };
