@@ -3,7 +3,7 @@ const {
   Types: { ObjectId },
 } = require("mongoose");
 const Blog = require("../models/blog");
-const { tokenExtractor, userExtractor } = require("../utils/middleware");
+const { authentication, userExtractor } = require("../utils/middleware");
 
 blogRouter.get("/:id", async (request, response) => {
   const { id } = request.params;
@@ -17,7 +17,7 @@ blogRouter.get("/:id", async (request, response) => {
 
 blogRouter.delete(
   "/:id",
-  tokenExtractor,
+  authentication,
   userExtractor,
   async (request, response) => {
     const { id } = request.params;
@@ -63,7 +63,7 @@ blogRouter.get("/", async (request, response) => {
 
 blogRouter.post(
   "/",
-  tokenExtractor,
+  authentication,
   userExtractor,
   async (request, response) => {
     const { user } = request;
