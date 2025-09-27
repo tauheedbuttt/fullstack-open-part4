@@ -13,7 +13,6 @@ export default [
     },
     plugins: { "@stylistic/js": stylisticJs },
     rules: {
-      "@stylistic/js/indent": ["error", 2],
       "@stylistic/js/linebreak-style": ["error", "unix"],
       eqeqeq: "error",
       "no-trailing-spaces": "error",

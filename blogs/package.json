@@ -7,20 +7,23 @@
     "lint": "eslint .",
     "start": "cross-env NODE_ENV=production node ./api/index.js",
     "dev": "cross-env NODE_ENV=development node --watch ./api/index.js",
-    "test": "cross-env  NODE_ENV=test node --test"
+    "test": "cross-env  NODE_ENV=test node --test --test-concurrency=1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "cross-env": "^10.0.0",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.18.2",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "supertest": "^7.1.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
