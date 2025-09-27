@@ -1,4 +1,16 @@
+const bcrypt = require("bcrypt");
 const Blog = require("../models/blog");
+const User = require("../models/user");
+
+const blogsInDb = async () => {
+  const blogs = await Blog.find({});
+  return blogs.map((blog) => blog.toJSON());
+};
+
+const usersInDb = async () => {
+  const users = await User.find({});
+  return users.map((user) => user.toJSON());
+};
 
 const blogs = [
   {
@@ -74,6 +86,11 @@ const validBlogWithoutLikes = {
   url: "https://reactpatterns.com/",
 };
 
+const validUser = {
+  username: "root",
+  password: "Test@1234",
+};
+
 const methods = (api) => ({
   delete: api.delete,
   get: api.get,
@@ -88,30 +105,54 @@ const nonExistingId = async () => {
   return blog._id.toString();
 };
 
-const blogsInDb = async () => {
-  const blogs = await Blog.find({});
-  return blogs.map((blog) => blog.toJSON());
+const idNotFoundTest =
+  (api, method, endpoint, data, headers = {}) =>
+  async () => {
+    const validNonexistingId = await nonExistingId();
+
+    const selectedMethod = methods(api)[method];
+
+    await selectedMethod(`${endpoint}${validNonexistingId}`)
+      .set(headers)
+      .send(data)
+      .expect(404);
+  };
+
+const invalidIdTest =
+  (api, method, endpoint, data, headers = {}) =>
+  async () => {
+    const invalidId = "bjh";
+
+    const selectedMethod = methods(api)[method];
+
+    await selectedMethod(`${endpoint}${invalidId}`)
+      .set(headers)
+      .send(data)
+      .expect(400);
+  };
+
+const validToken = async (api) => {
+  // Login to receive a token
+  const response = await api
+    .post("/api/login")
+    .send(validUser)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  return response.body;
 };
 
-const idNotFoundTest = (api, method, endpoint, data) => async () => {
-  const validNonexistingId = await nonExistingId();
+const createRootUser = async () => {
+  await User.deleteMany({});
 
-  const selectedMethod = methods(api)[method];
+  const passwordHash = await bcrypt.hash(validUser.password, 10);
+  const user = new User({ username: validUser.username, passwordHash });
 
-  await selectedMethod(`${endpoint}${validNonexistingId}`)
-    .send(data)
-    .expect(404);
-};
-
-const invalidIdTest = (api, method, endpoint, data) => async () => {
-  const invalidId = "bjh";
-
-  const selectedMethod = methods(api)[method];
-
-  await selectedMethod(`${endpoint}${invalidId}`).send(data).expect(400);
+  await user.save();
 };
 
 module.exports = {
+  validUser,
   blogs,
   validBlog,
   invalidBlogWithoutTitle,
@@ -119,6 +160,9 @@ module.exports = {
   validBlogWithoutLikes,
   nonExistingId,
   blogsInDb,
+  usersInDb,
   idNotFoundTest,
   invalidIdTest,
+  validToken,
+  createRootUser,
 };
