@@ -16,7 +16,9 @@ const app = express();
 mongoose.set("strictQuery", false);
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(
+    process.env.NODE_ENV === "test" ? process.env.TEST_MONGODB_URI : MONGODB_URI
+  )
   .then(() => info("MongoDB connection established"))
   .catch((error) => {
     info("error connecting to MongoDB:", error.message);
